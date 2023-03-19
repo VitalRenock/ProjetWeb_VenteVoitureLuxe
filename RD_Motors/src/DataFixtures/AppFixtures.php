@@ -2,8 +2,11 @@
 
 namespace App\DataFixtures;
 
+use App\Entity\Address;
 use App\Entity\Brand;
 use App\Entity\Car;
+use App\Entity\City;
+use App\Entity\Country;
 use App\Entity\Model;
 use App\Entity\Role;
 use App\Entity\User;
@@ -110,6 +113,43 @@ class AppFixtures extends Fixture
             $cars[]=$car;
             $manager->persist($car);
         }
+        //endregion
+
+        //region Création de Country
+        $countries=[];
+        for($i=0;$i<10;$i++)
+        {
+            $country = new Country();
+            $country->setName($this->faker->country);
+            $countries[]=$country;
+            $manager->persist($country);
+        }
+        //endregion
+
+        //region Création de City
+        $cities=[];
+        for($i=0;$i<15;$i++)
+        {
+            $city= new City();
+            $city->setLocality($this->faker->city)
+                ->setPostalCode((int)$this->faker->postcode)
+                ->setCountry($countries[mt_rand(0,count($countries)-1)]);
+            $cities[]=$city;
+            $manager->persist($city);
+        }
+        //endregion
+
+        //region Création de Address
+        $addresses=[];
+        for($i=0;$i<20;$i++)
+        {
+            $address = new Address();
+            $address->setStreet($this->faker->streetAddress)
+                ->setCity($cities[mt_rand(0,count($cities)-1)]);
+            $addresses[]=$address;
+            $manager->persist($address);
+        }
+
         //endregion
         $manager->flush();
     }
