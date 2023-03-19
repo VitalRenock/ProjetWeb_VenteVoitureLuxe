@@ -2,13 +2,13 @@
 
 namespace App\Entity;
 
-use App\Repository\RoleRepository;
+use App\Repository\CountryRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: RoleRepository::class)]
-class Role
+#[ORM\Entity(repositoryClass: CountryRepository::class)]
+class Country
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -18,12 +18,12 @@ class Role
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
-    #[ORM\OneToMany(mappedBy: 'role', targetEntity: User::class)]
-    private Collection $users;
+    #[ORM\OneToMany(mappedBy: 'country', targetEntity: City::class)]
+    private Collection $cities;
 
     public function __construct()
     {
-        $this->users = new ArrayCollection();
+        $this->cities = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -44,29 +44,29 @@ class Role
     }
 
     /**
-     * @return Collection<int, User>
+     * @return Collection<int, City>
      */
-    public function getUsers(): Collection
+    public function getCities(): Collection
     {
-        return $this->users;
+        return $this->cities;
     }
 
-    public function addUser(User $user): self
+    public function addCity(City $city): self
     {
-        if (!$this->users->contains($user)) {
-            $this->users->add($user);
-            $user->setRole($this);
+        if (!$this->cities->contains($city)) {
+            $this->cities->add($city);
+            $city->setCountry($this);
         }
 
         return $this;
     }
 
-    public function removeUser(User $user): self
+    public function removeCity(City $city): self
     {
-        if ($this->users->removeElement($user)) {
+        if ($this->cities->removeElement($city)) {
             // set the owning side to null (unless already changed)
-            if ($user->getRole() === $this) {
-                $user->setRole(null);
+            if ($city->getCountry() === $this) {
+                $city->setCountry(null);
             }
         }
 
