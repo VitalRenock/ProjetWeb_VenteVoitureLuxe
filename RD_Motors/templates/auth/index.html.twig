@@ -1,0 +1,25 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}RD Motors - Connexion {% endblock %}
+
+{% block body %}
+<style>
+    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
+    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
+</style>
+    <h1>Connexion </h1>
+    {% if error %}
+        <div class="alert alert-danger mt-4">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+    {% endif %}
+    <form action="{{ path('auth.login') }}" method="post">
+        <div class="form-group">
+            <label for="username" class="form-label mt-4">Nom d'utilisateur</label>
+            <input type="text" class="form-control" id="username" name="_username" placeholder="TonUsernameIci" >
+        </div>
+        <div class="form-group">
+            <label for="password" class="form-label mt-4">Mot de passe</label>
+            <input type="password" class="form-control" id="password" name="_password" placeholder="********">
+        </div>
+        <button class="btn btn-primary mt-4" type="submit"> Se connecter</button>
+    </form>
+{% endblock %}
