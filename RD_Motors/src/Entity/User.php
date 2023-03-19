@@ -53,6 +53,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\JoinColumn(nullable: false)]
     private ?Role $role = null;
 
+   private array $roles = [];
+
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Order::class)]
     private Collection $user;
 
@@ -62,6 +64,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function __construct()
     {
         $this->user = new ArrayCollection();
+        $this->roles = [$this->role->getName()];
     }
 
     public function getId(): ?int
@@ -89,25 +92,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getUserIdentifier(): string
     {
         return (string) $this->username;
-    }
-
-    /**
-     * @see UserInterface
-     */
-    public function getRoles(): array
-    {
-        $roles = $this->roles;
-        // guarantee every user at least has ROLE_USER
-        $roles[] = 'ROLE_USER';
-
-        return array_unique($roles);
-    }
-
-    public function setRoles(array $roles): self
-    {
-        $this->roles = $roles;
-
-        return $this;
     }
 
     /**
@@ -217,6 +201,23 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
         return $this;
     }
+
+    /**
+     * @return array
+     */
+    public function getRoles(): array
+    {
+        return $this->roles;
+    }
+
+    /**
+     * @param array $roles
+     */
+    public function setRoles(array $roles): void
+    {
+        $this->roles = $roles;
+    }
+
 
     /**
      * @return Collection<int, Order>
