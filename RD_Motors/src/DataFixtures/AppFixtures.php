@@ -46,6 +46,17 @@ class AppFixtures extends Fixture
         //region Création des "Users"
 
         // ->setPassword(password_hash('password',PASSWORD_BCRYPT))
+        $user = new User();
+        $user->setUsername('test')
+            ->setFirstName('test')
+            ->setLastName('test')
+            ->setPassword(password_hash('test',PASSWORD_BCRYPT))
+            ->setPhone('test')
+            ->setEmail('test@test.test')
+            ->setIsActive(true)
+            ->setBirthday($this->randomDate('1910/01/01','2004/01/01'))
+            ->setRole($roles[2]);
+        $manager->persist($user);
             for($i=0;$i<5;$i++)
             {
                 $user = new User();
