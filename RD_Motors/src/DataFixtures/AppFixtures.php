@@ -2,6 +2,9 @@
 
 namespace App\DataFixtures;
 
+use App\Entity\Brand;
+use App\Entity\Car;
+use App\Entity\Model;
 use App\Entity\Role;
 use App\Entity\User;
 use Doctrine\Bundle\FixturesBundle\Fixture;
@@ -55,6 +58,58 @@ class AppFixtures extends Fixture
                 $manager->persist($user);
 
             }
+        //endregion
+
+        //region Création de Brand
+        $brands = [];
+        for($i=0;$i<5;$i++)
+        {
+            $brand = new Brand();
+            $brand->setName($this->faker->company);
+            $brands[]=$brand;
+            $manager->persist($brand);
+        }
+        //endregion
+
+        //region Création de Model
+        $models=[];
+        for($i=0;$i<10;$i++)
+        {
+            $model = new Model();
+            $model->setName($this->faker->word)
+                ->setBrand($brands[mt_rand(0,count($brands)-1)]);
+            $models[] = $model;
+            $manager->persist($model);
+        }
+        //endregion
+
+        //region Création de Car
+        $cars=[];
+        for($i=0;$i<20;$i++)
+        {
+            $car = new Car();
+            $car->setChassisNumber($this->faker->swiftBicNumber())
+                ->setIsActive(mt_rand(0,1)==1?true :false)
+                ->setConsumption(mt_rand(0,1)==1?mt_rand(0,25).' L/100Km' :mt_rand(0,25).' KW/100Km')
+                ->setCylinderCapacity(mt_rand(500,2500))
+                ->setCylinderNumber(mt_rand(4,24))
+                ->setDoorNumber(mt_rand(0,1)==1?mt_rand(3,5) :null)
+                ->setSeatNumber(mt_rand(0,1)==1?mt_rand(1,7) :null)
+                ->setGears(mt_rand(5,10))
+                ->setGearbox('ENUM A CHANGER')
+                ->setFuelType('ENUM A CHANGER')
+                ->setManufactureDate($this->randomDate('1970/01/01','2023/01/01'))
+                ->setInterior($this->faker->text)
+                ->setMileage(mt_rand(0,300000))
+                ->setState('ENUM A CHANGER')
+                ->setPower(mt_rand(100,1000))
+                ->setPhoto($this->faker->imageUrl)
+                ->setTransmissionType('ENUM A CHANGER')
+                ->setTareWeight(mt_rand(900,3000))
+                ->setModel($models[mt_rand(0,count($models)-1)]);
+            $cars[]=$car;
+            $manager->persist($car);
+        }
         //endregion
         $manager->flush();
     }

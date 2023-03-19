@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Enum\PaymentType;
 use App\Repository\OrderRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -20,8 +21,8 @@ class Order
     #[ORM\Column]
     private ?float $price = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $paymentType = null;
+    #[ORM\Column(type: "string", enumType: PaymentType::class)]
+    private ?PaymentType $paymentType;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $deliveryDate = null;
