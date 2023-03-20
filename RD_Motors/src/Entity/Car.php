@@ -80,6 +80,9 @@ class Car
     #[ORM\ManyToMany(targetEntity: Color::class, inversedBy: 'cars')]
     private Collection $colors;
 
+    #[ORM\Column()]
+    private ?float $price = null;
+
     public function __construct()
     {
         $this->orders = new ArrayCollection();
@@ -363,6 +366,18 @@ class Car
     public function removeColor(Color $color): self
     {
         $this->colors->removeElement($color);
+
+        return $this;
+    }
+
+    public function getPrice(): ?float
+    {
+        return $this->price;
+    }
+
+    public function setPrice(?float $price): self
+    {
+        $this->price = $price;
 
         return $this;
     }

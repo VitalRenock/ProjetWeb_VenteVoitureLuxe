@@ -21,7 +21,7 @@ class Order
     #[ORM\Column]
     private ?float $price = null;
 
-    #[ORM\Column(type: "string", enumType: PaymentType::class)]
+    #[ORM\Column(type: "string", enumType: PaymentType::class, nullable: true)]
     private ?PaymentType $paymentType;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]

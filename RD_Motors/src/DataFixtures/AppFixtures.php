@@ -8,6 +8,7 @@ use App\Entity\Car;
 use App\Entity\City;
 use App\Entity\Country;
 use App\Entity\Model;
+use App\Entity\Order;
 use App\Entity\Role;
 use App\Entity\User;
 use App\Entity\UserAddress;
@@ -15,6 +16,7 @@ use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use Faker\Factory;
 use Faker\Generator;
+use Monolog\DateTimeImmutable;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 
@@ -102,28 +104,33 @@ class AppFixtures extends Fixture
 
         //region Création de Car
         $cars=[];
+        $gearbox = ['Manuelle','Automatique','Séquentielle'];
+        $fuelType = ['Essence','Diesel','Electrique','Plug-In-Hybrid','Hybrid Rechargeable','Hygrogène'];
+        $state = ['Neuf','Occasion'];
+        $transmissiontype = ['Avant','Arrière','4x4'];
         for($i=0;$i<20;$i++)
         {
             $car = new Car();
             $car->setChassisNumber($this->faker->swiftBicNumber())
-                ->setIsActive(mt_rand(0,1)==1?true :false)
+                ->setIsActive(mt_rand(0,2)==1?false :true)
                 ->setConsumption(mt_rand(0,1)==1?mt_rand(0,25).' L/100Km' :mt_rand(0,25).' KW/100Km')
                 ->setCylinderCapacity(mt_rand(500,2500))
                 ->setCylinderNumber(mt_rand(4,24))
                 ->setDoorNumber(mt_rand(0,1)==1?mt_rand(3,5) :null)
                 ->setSeatNumber(mt_rand(0,1)==1?mt_rand(1,7) :null)
                 ->setGears(mt_rand(5,10))
-                ->setGearbox('ENUM A CHANGER')
-                ->setFuelType('ENUM A CHANGER')
+                ->setGearbox($gearbox[mt_rand(0,count($gearbox)-1)])
+                ->setFuelType($fuelType[mt_rand(0,count($fuelType)-1)])
                 ->setManufactureDate($this->randomDate('1970/01/01','2023/01/01'))
                 ->setInterior($this->faker->text)
                 ->setMileage(mt_rand(0,300000))
-                ->setState('ENUM A CHANGER')
+                ->setState($state[mt_rand(0,count($state)-1)])
                 ->setPower(mt_rand(100,1000))
                 ->setPhoto($this->faker->imageUrl)
-                ->setTransmissionType('ENUM A CHANGER')
+                ->setTransmissionType($transmissiontype[mt_rand(0,count($transmissiontype)-1)])
                 ->setTareWeight(mt_rand(900,3000))
-                ->setModel($models[mt_rand(0,count($models)-1)]);
+                ->setModel($models[mt_rand(0,count($models)-1)])
+                ->setPrice(mt_rand(5000,600000));
             $cars[]=$car;
             $manager->persist($car);
         }
@@ -195,6 +202,54 @@ class AppFixtures extends Fixture
                 }
             }
         //endregion
+
+        //region Création des Order
+        $prixTotal = 0;
+
+        $payType=['Cash','Visa','Mastercard'];
+        for($i=0;$i<5;$i++)
+        {
+            $carsInOrder=[];
+            $order = new Order();
+            $order->setUser($users[mt_rand(0,count($users)-1)])
+                ->setOrderDate($this->randomDate('2020/01/01','2023/01/01'))
+                ->setBillingDate(mt_rand(0,1)==1?$this->randomDate($order->getOrderDate()->format('Y-m-d H:i:s'),'2023/01/01'):null)
+                ->setDeliveryDate($this->randomDeliveryDate($order))
+                ->setOrderStatus($this->randomOrderStatus($order))
+                ->setUser($users[mt_rand(0,count($users)-1)]);
+            for($i=0;$i<mt_rand(1,7);$i++)
+            {
+                $carOk = true;
+                $random = mt_rand(0,count($cars)-1);
+                if(!empty($carsInOrder))
+                {
+                    foreach ($carsInOrder as $c)
+                    {
+                        if($cars[$random] == $c)
+                            $carok = false;
+                    }
+                }
+
+                if($cars[$random]->isIsActive() == false && $carOk == true)
+                {
+                    $order->addCar($cars[$random]);
+                    $carsInOrder[] = $cars[$random];
+                }
+                elseif($cars[$random]->isIsActive() == true && $carOk == true &&$order->getOrderStatus() == 'Annulé')
+                {
+                    $order->addCar($cars[$random]);
+                    $carsInOrder[] = $cars[$random];
+                }
+            }
+            foreach ($carsInOrder as $c)
+            {
+                $prixTotal+= $c->getPrice();
+            }
+            $order->setPrice($prixTotal);
+            $manager->persist($order);
+
+        }
+        //endregion
         $manager->flush();
     }
     // Find a randomDate between $start_date and $end_date
@@ -209,5 +264,27 @@ class AppFixtures extends Fixture
 
         // Convert back to desired date format
         return  date_create(date('Y-m-d H:i:s', $val));
+    }
+
+    function randomDeliveryDate(Order $order) : ?\DateTime //Si Billing Date = null, Delivery Date doit etre null
+    {
+        if($order->getBillingDate() == null)
+        {
+            return null;
+        }
+        return mt_rand(0,1)==1?$this->randomDate($order->getBillingDate()->format('Y-m-d H:i:s'),'2023/01/01'):null;
+    }
+    function randomOrderStatus(Order $order) : string //Vérification d'un status cohérent en fonction des différentes dates
+    {
+        $orderStatus = ['Créé','Payé','Facturé','Livré','Annulé'];
+        if($order->getBillingDate() == null)
+        {
+            return $orderStatus[mt_rand(0,1) == 1?mt_rand(0,1) : 4 ];
+        }
+        if($order->getOrderDate() == null)
+        {
+            return $orderStatus[2];
+        }
+        return $orderStatus[3];
     }
 }
