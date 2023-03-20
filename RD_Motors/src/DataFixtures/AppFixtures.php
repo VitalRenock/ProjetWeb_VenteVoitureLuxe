@@ -6,6 +6,7 @@ use App\Entity\Address;
 use App\Entity\Brand;
 use App\Entity\Car;
 use App\Entity\City;
+use App\Entity\Color;
 use App\Entity\Country;
 use App\Entity\Model;
 use App\Entity\Order;
@@ -102,13 +103,27 @@ class AppFixtures extends Fixture
         }
         //endregion
 
+        //region Création de color
+        $colors=[];
+        $colorType = ['Normal','Métalisé','Matte'];
+        for($i=0;$i<10;$i++)
+        {
+            $color = new Color();
+            $color->setName($this->faker->colorName)
+                ->setColorType($colorType[mt_rand(0,count($colorType)-1)]);
+            $colors[] = $color;
+            $manager->persist($color);
+        }
+
+        //endregion
+
         //region Création de Car
         $cars=[];
         $gearbox = ['Manuelle','Automatique','Séquentielle'];
         $fuelType = ['Essence','Diesel','Electrique','Plug-In-Hybrid','Hybrid Rechargeable','Hygrogène'];
         $state = ['Neuf','Occasion'];
         $transmissiontype = ['Avant','Arrière','4x4'];
-        for($i=0;$i<20;$i++)
+        for($i=0;$i<50;$i++)
         {
             $car = new Car();
             $car->setChassisNumber($this->faker->swiftBicNumber())
@@ -131,6 +146,10 @@ class AppFixtures extends Fixture
                 ->setTareWeight(mt_rand(900,3000))
                 ->setModel($models[mt_rand(0,count($models)-1)])
                 ->setPrice(mt_rand(5000,600000));
+            for($j=0;$j<mt_rand(1,3);$j++)
+            {
+                $car->addColor($colors[mt_rand(0,count($colors)-1)]);
+            }
             $cars[]=$car;
             $manager->persist($car);
         }
@@ -205,49 +224,46 @@ class AppFixtures extends Fixture
 
         //region Création des Order
         $prixTotal = 0;
-
+        $carsInOrder=[];
         $payType=['Cash','Visa','Mastercard'];
-        for($i=0;$i<5;$i++)
+        for($i=0;$i<50;$i++)
         {
-            $carsInOrder=[];
+            foreach ($carsInOrder as $c)
+            {
+                unset($c);
+            }
+            reset($carsInOrder);
+
             $order = new Order();
             $order->setUser($users[mt_rand(0,count($users)-1)])
                 ->setOrderDate($this->randomDate('2020/01/01','2023/01/01'))
                 ->setBillingDate(mt_rand(0,1)==1?$this->randomDate($order->getOrderDate()->format('Y-m-d H:i:s'),'2023/01/01'):null)
                 ->setDeliveryDate($this->randomDeliveryDate($order))
-                ->setOrderStatus($this->randomOrderStatus($order))
-                ->setUser($users[mt_rand(0,count($users)-1)]);
-            for($i=0;$i<mt_rand(1,7);$i++)
+                ->setUser($users[mt_rand(0,count($users)-1)])
+                ->setOrderStatus($this->randomOrderStatus($order));
+            $carNumber = 0;
+            do
             {
-                $carOk = true;
-                $random = mt_rand(0,count($cars)-1);
-                if(!empty($carsInOrder))
-                {
-                    foreach ($carsInOrder as $c)
-                    {
-                        if($cars[$random] == $c)
-                            $carok = false;
-                    }
-                }
+                    $random = mt_rand(0,count($cars)-1);
 
-                if($cars[$random]->isIsActive() == false && $carOk == true)
+                if(!$cars[$random]->isIsActive())
+                {
+                    $order->addCar($cars[$random]);
+                    $carsInOrder[] = $cars[$random];
+                    $carNumber++;
+                }
+                elseif($cars[$random]->isIsActive()&& $order->getOrderStatus() == 'Annulé')
                 {
                     $order->addCar($cars[$random]);
                     $carsInOrder[] = $cars[$random];
                 }
-                elseif($cars[$random]->isIsActive() == true && $carOk == true &&$order->getOrderStatus() == 'Annulé')
-                {
-                    $order->addCar($cars[$random]);
-                    $carsInOrder[] = $cars[$random];
-                }
-            }
+            }while($carNumber<mt_rand(1,3));
             foreach ($carsInOrder as $c)
             {
                 $prixTotal+= $c->getPrice();
             }
             $order->setPrice($prixTotal);
             $manager->persist($order);
-
         }
         //endregion
         $manager->flush();
@@ -277,11 +293,19 @@ class AppFixtures extends Fixture
     function randomOrderStatus(Order $order) : string //Vérification d'un status cohérent en fonction des différentes dates
     {
         $orderStatus = ['Créé','Payé','Facturé','Livré','Annulé'];
+        if(!$order->getUser()->isIsActive()&&$order->getDeliveryDate() != null)
+        {
+            return $orderStatus[3];
+        }
+        if(!$order->getUser()->isIsActive()&&$order->getBillingDate() == null)
+        {
+            return $orderStatus[4];
+        }
         if($order->getBillingDate() == null)
         {
-            return $orderStatus[mt_rand(0,1) == 1?mt_rand(0,1) : 4 ];
+            return $orderStatus[mt_rand(0,1) == 1?mt_rand(0,1): 4];
         }
-        if($order->getOrderDate() == null)
+        if($order->getDeliveryDate() == null)
         {
             return $orderStatus[2];
         }
