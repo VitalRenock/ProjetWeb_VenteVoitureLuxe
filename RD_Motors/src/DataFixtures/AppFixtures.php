@@ -10,6 +10,7 @@ use App\Entity\Country;
 use App\Entity\Model;
 use App\Entity\Role;
 use App\Entity\User;
+use App\Entity\UserAddress;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use Faker\Factory;
@@ -57,6 +58,7 @@ class AppFixtures extends Fixture
             ->setBirthday($this->randomDate('1910/01/01','2004/01/01'))
             ->setRole($roles[2]);
         $manager->persist($user);
+        $users=[];
             for($i=0;$i<5;$i++)
             {
                 $user = new User();
@@ -69,6 +71,7 @@ class AppFixtures extends Fixture
                     ->setIsActive(mt_rand(0,1)==1?true :false)
                     ->setBirthday($this->randomDate('1910/01/01','2004/01/01'))
                     ->setRole($roles[mt_rand(0,count($roles)-1)]);
+                $users[] = $user;
                 $manager->persist($user);
 
             }
@@ -161,6 +164,36 @@ class AppFixtures extends Fixture
             $manager->persist($address);
         }
 
+        //endregion
+        //region Création de UserAddress
+        $addressType = ['Domicile','Livraison','Facturation'];
+        $userAdresses=[];
+        $userAdressExistant = false;
+            for($i=0;$i<15;$i++)
+            {
+                $userAdress = new UserAddress();
+                $userAdress->setAddressType($addressType[mt_rand(0,2)])
+                    ->setAddress($addresses[mt_rand(0,count($addresses)-1)])
+                    ->setUser($users[mt_rand(0,count($users)-1)]);
+                if($i>0)
+                {
+                    foreach ($userAdresses as $u ) //éviter qu'on se retrouve avec les trois aattributs les memes plusieurs fois
+                    {
+                        if($userAdress->getUser() == $u->getUser() && $userAdress->getAddress() == $u->getAddress() && $userAdress->getAddressType() == $u->getAddressType())
+                        {
+                            $userAdressExistant = true;
+                            break;
+                        }
+                        $userAdressExistant=false;
+                    }
+                    if($userAdressExistant == false)
+                    {
+                        $userAdresses[] = $userAdress;
+                        $manager->persist($userAdress);
+                    }
+
+                }
+            }
         //endregion
         $manager->flush();
     }
