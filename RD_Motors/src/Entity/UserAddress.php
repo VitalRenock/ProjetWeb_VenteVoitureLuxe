@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Enum\AddressType;
 use App\Repository\UserAddressRepository;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -21,8 +22,8 @@ class UserAddress
     #[ORM\JoinColumn(nullable: false)]
     private ?Address $address = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $addressType = null;
+    #[ORM\Column(type: "string", enumType: AddressType::class, nullable: false)]
+    private ?AddressType $addressType = null;
 
     public function getId(): ?int
     {
@@ -55,12 +56,12 @@ class UserAddress
 
     public function getAddressType(): ?string
     {
-        return $this->addressType;
+        return $this->addressType->value;
     }
 
     public function setAddressType(string $addressType): self
     {
-        $this->addressType = $addressType;
+        $this->addressType = AddressType::from($addressType);
 
         return $this;
     }

@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Enum\ColorType;
 use App\Repository\ColorRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -18,8 +19,8 @@ class Color
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $colorType = null;
+    #[ORM\Column(type: "string", enumType: ColorType::class, nullable: false)]
+    private ?ColorType $colorType = null;
 
     #[ORM\ManyToMany(targetEntity: Car::class, mappedBy: 'colors')]
     private Collection $cars;
@@ -48,12 +49,12 @@ class Color
 
     public function getColorType(): ?string
     {
-        return $this->colorType;
+        return $this->colorType->value;
     }
 
     public function setColorType(string $colorType): self
     {
-        $this->colorType = $colorType;
+        $this->colorType = ColorType::from($colorType);
 
         return $this;
     }
