@@ -2,6 +2,11 @@
 
 namespace App\Entity;
 
+use App\Enum\CarState;
+use App\Enum\FuelType;
+use App\Enum\GearboxType;
+use App\Enum\PaymentType;
+use App\Enum\TransmissionType;
 use App\Repository\CarRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -25,8 +30,8 @@ class Car
     #[ORM\Column]
     private ?int $mileage = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $state = null;
+    #[ORM\Column(type: "string", enumType: PaymentType::class)]
+    private ?CarState $state = null;
 
     #[ORM\Column]
     private ?int $power = null;
@@ -40,14 +45,14 @@ class Car
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $interior = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $transmissionType = null;
+    #[ORM\Column(type: "string", enumType: TransmissionType::class)]
+    private ?TransmissionType $transmissionType = null;
 
     #[ORM\Column]
     private ?int $gears = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $gearbox = null;
+    #[ORM\Column(type : "string", enumType: GearboxType::class)]
+    private ?GearboxType $gearbox = null;
 
     #[ORM\Column(nullable: true)]
     private ?int $cylinderCapacity = null;
@@ -64,8 +69,8 @@ class Car
     #[ORM\Column]
     private ?bool $isActive = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $fuelType = null;
+    #[ORM\Column(type :"string", enumType: FuelType::class)]
+    private ?FuelType $fuelType = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $photo = null;
@@ -79,6 +84,9 @@ class Car
 
     #[ORM\ManyToMany(targetEntity: Color::class, inversedBy: 'cars')]
     private Collection $colors;
+
+    #[ORM\Column()]
+    private ?float $price = null;
 
     public function __construct()
     {
@@ -129,16 +137,15 @@ class Car
 
     public function getState(): ?string
     {
-        return $this->state;
+        return $this->state->value;
     }
 
-    public function setState(string $state): self
+    public function setState(string $carState): self
     {
-        $this->state = $state;
+        $this->state = CarState::from($carState);
 
         return $this;
     }
-
     public function getPower(): ?int
     {
         return $this->power;
@@ -189,12 +196,12 @@ class Car
 
     public function getTransmissionType(): ?string
     {
-        return $this->transmissionType;
+        return $this->transmissionType->value;
     }
 
     public function setTransmissionType(string $transmissionType): self
     {
-        $this->transmissionType = $transmissionType;
+        $this->transmissionType = TransmissionType::from($transmissionType);
 
         return $this;
     }
@@ -213,12 +220,12 @@ class Car
 
     public function getGearbox(): ?string
     {
-        return $this->gearbox;
+        return $this->gearbox->value;
     }
 
     public function setGearbox(string $gearbox): self
     {
-        $this->gearbox = $gearbox;
+        $this->gearbox = GearboxType::from($gearbox);
 
         return $this;
     }
@@ -285,12 +292,12 @@ class Car
 
     public function getFuelType(): ?string
     {
-        return $this->fuelType;
+        return $this->fuelType->value;
     }
 
     public function setFuelType(string $fuelType): self
     {
-        $this->fuelType = $fuelType;
+        $this->fuelType = FuelType::from($fuelType);
 
         return $this;
     }
@@ -363,6 +370,18 @@ class Car
     public function removeColor(Color $color): self
     {
         $this->colors->removeElement($color);
+
+        return $this;
+    }
+
+    public function getPrice(): ?float
+    {
+        return $this->price;
+    }
+
+    public function setPrice(?float $price): self
+    {
+        $this->price = $price;
 
         return $this;
     }
