@@ -107,7 +107,7 @@ class AppFixtures extends Fixture
 
         //region Création de color
         $colors=[];
-        $colorType = ['Normal','Métalisé','Matte'];
+        $colorType = ['NORMAL','METALLIC','MAT'];
         for($i=0;$i<10;$i++)
         {
             $color = new Color();
@@ -193,7 +193,7 @@ class AppFixtures extends Fixture
 
         //endregion
         //region Création de UserAddress
-        $addressType = ['Domicile','Livraison','Facturation'];
+        $addressType = ['HOME','DELIVERY','BILLING'];
         $userAdresses=[];
         $userAdressExistant = false;
             for($i=0;$i<15;$i++)
@@ -226,7 +226,7 @@ class AppFixtures extends Fixture
         //region Création des Order
         $prixTotal = 0;
         $carsInOrder=[];
-        $payType=['Cash','Visa','Mastercard'];
+        $payType=['CASH','VISA','MASTERCARD','TRANSFER'];
         for($i=0;$i<50;$i++)
         {
             foreach ($carsInOrder as $c)
@@ -253,7 +253,7 @@ class AppFixtures extends Fixture
                     $carsInOrder[] = $cars[$random];
                     $carNumber++;
                 }
-                elseif($cars[$random]->isIsActive()&& $order->getOrderStatus() == 'Annulé')
+                elseif($cars[$random]->isIsActive()&& $order->getOrderStatus() == 'CANCELLED')
                 {
                     $order->addCar($cars[$random]);
                     $carsInOrder[] = $cars[$random];
@@ -300,7 +300,7 @@ class AppFixtures extends Fixture
     public function randomGearbox(Car $car) : string
     {
         $gearbox = ['MANUAL','AUTOMATIC','CVT'];
-        if($car->getFuelType() == 'Essence'|| $car->getFuelType() == 'Diesel')
+        if($car->getFuelType() == 'PETROL'|| $car->getFuelType() == 'DIESEL')
         {
             return $gearbox[mt_rand(0,count($gearbox)-1)];
         }
@@ -330,7 +330,7 @@ class AppFixtures extends Fixture
     }
     function randomOrderStatus(Order $order) : string //Vérification d'un status cohérent en fonction des différentes dates
     {
-        $orderStatus = ['Créé','Payé','Facturé','Livré','Annulé'];
+        $orderStatus = ['CREATED','PAID','INVOICED','DELIVERED','CANCELLED'];
         if(!$order->getUser()->isIsActive()&&$order->getDeliveryDate() != null)
         {
             return $orderStatus[3];

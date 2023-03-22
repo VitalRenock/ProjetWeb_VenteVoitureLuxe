@@ -11,9 +11,9 @@ enum AddressType : string
     public function translateFR(): string
     {
         return match($this) {
-            AddressType::HOME => 'Espèce',
-            AddressType::DELIVERY => 'Carte VISA',
-            AddressType::BILLING => 'Carte MASTERCARD'
+            AddressType::HOME => 'Domicile',
+            AddressType::DELIVERY => 'Adresse de livraison',
+            AddressType::BILLING => 'Adresse de facturation'
         };
     }
 }
