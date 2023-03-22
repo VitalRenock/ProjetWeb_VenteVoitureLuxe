@@ -72,7 +72,7 @@ class AppFixtures extends Fixture
                     ->setPassword(password_hash('password',PASSWORD_BCRYPT))
                     ->setPhone(mt_rand(0,1)==1?$this->faker->phoneNumber :null)
                     ->setEmail($this->faker->email)
-                    ->setIsActive(mt_rand(0,1)==1?true :false)
+                    ->setIsActive(mt_rand(0,1)==1)
                     ->setBirthday($this->randomDate('1910/01/01','2004/01/01'))
                     ->setRole($roles[mt_rand(0,count($roles)-1)]);
                 $users[] = $user;
@@ -129,7 +129,7 @@ class AppFixtures extends Fixture
             $car = new Car();
             $car->setChassisNumber($this->faker->swiftBicNumber())
                 ->setFuelType($fuelType[mt_rand(0,count($fuelType)-1)])
-                ->setIsActive(mt_rand(0,2)==1?false :true)
+                ->setIsActive(mt_rand(0,2)==1)
                 ->setConsumption($this->randomConsumption($car))
                 ->setCylinderCapacity($this->randomCylinderCapacity($car))
                 ->setCylinderNumber($this->randomCylinderNumber($car))
@@ -213,7 +213,7 @@ class AppFixtures extends Fixture
                         }
                         $userAdressExistant=false;
                     }
-                    if($userAdressExistant == false)
+                    if(!$userAdressExistant)
                     {
                         $userAdresses[] = $userAdress;
                         $manager->persist($userAdress);
@@ -271,11 +271,11 @@ class AppFixtures extends Fixture
     }
     public function randomConsumption(Car $car) : string
     {
-        if($car->getFuelType() == 'Diesel' || $car->getFuelType() == 'Essence')
+        if($car->getFuelType() == 'DIESEL' || $car->getFuelType() == 'PETROL')
         {
             return mt_rand(5,20).' L/100KM';
         }
-        if($car->getFuelType() == 'Electrique')
+        if($car->getFuelType() == 'ELECTRIC')
         {
             return mt_rand(4,25).' KW/100KM';
         }
@@ -283,7 +283,7 @@ class AppFixtures extends Fixture
     }
     public function randomCylinderCapacity(Car $car) : ?int
     {
-        if($car->getFuelType() == 'Electrique')
+        if($car->getFuelType() == 'ELECTRIC')
         {
             return null;
         }
@@ -291,7 +291,7 @@ class AppFixtures extends Fixture
     }
     public function randomCylinderNumber(Car $car) : ?int
     {
-        if($car->getFuelType() == 'Electrique')
+        if($car->getFuelType() == 'ELECTRIC')
         {
             return null;
         }
@@ -299,7 +299,7 @@ class AppFixtures extends Fixture
     }
     public function randomGearbox(Car $car) : string
     {
-        $gearbox = ['Manuelle','Automatique','Séquentielle'];
+        $gearbox = ['MANUAL','AUTOMATIC','CVT'];
         if($car->getFuelType() == 'Essence'|| $car->getFuelType() == 'Diesel')
         {
             return $gearbox[mt_rand(0,count($gearbox)-1)];
