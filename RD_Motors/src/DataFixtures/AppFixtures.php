@@ -13,6 +13,7 @@ use App\Entity\Order;
 use App\Entity\Role;
 use App\Entity\User;
 use App\Entity\UserAddress;
+use App\Enum\PaymentType;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use Faker\Factory;
@@ -82,10 +83,11 @@ class AppFixtures extends Fixture
 
         //region Création de Brand
         $brands = [];
-        for($i=0;$i<5;$i++)
+            $brandNames = ['Porsche', 'Ferrari', 'Tesla', 'Mazda','Mustang', 'Lamborghini','Bugatti','Maserati','Alpine','Rolls-Royce','Aston Martin','Bentley'];
+        for($i=0;$i<count($brandNames)-1;$i++)
         {
             $brand = new Brand();
-            $brand->setName($this->faker->company);
+            $brand->setName($brandNames[$i]);
             $brands[]=$brand;
             $manager->persist($brand);
         }
@@ -119,23 +121,22 @@ class AppFixtures extends Fixture
 
         //region Création de Car
         $cars=[];
-        $gearbox = ['Manuelle','Automatique','Séquentielle'];
-        $fuelType = ['Essence','Diesel','Electrique','Plug-In-Hybrid','Hybrid Rechargeable','Hygrogène'];
+        $fuelType = ['Essence','Diesel','Electrique','Plug-In-Hybrid','Hybrid Rechargeable'];
         $state = ['Neuf','Occasion'];
         $transmissiontype = ['Avant','Arrière','4x4'];
         for($i=0;$i<50;$i++)
         {
             $car = new Car();
             $car->setChassisNumber($this->faker->swiftBicNumber())
+                ->setFuelType($fuelType[mt_rand(0,count($fuelType)-1)])
                 ->setIsActive(mt_rand(0,2)==1?false :true)
-                ->setConsumption(mt_rand(0,1)==1?mt_rand(0,25).' L/100Km' :mt_rand(0,25).' KW/100Km')
-                ->setCylinderCapacity(mt_rand(500,2500))
-                ->setCylinderNumber(mt_rand(4,24))
+                ->setConsumption($this->randomConsumption($car))
+                ->setCylinderCapacity($this->randomCylinderCapacity($car))
+                ->setCylinderNumber($this->randomCylinderNumber($car))
                 ->setDoorNumber(mt_rand(0,1)==1?mt_rand(3,5) :null)
                 ->setSeatNumber(mt_rand(0,1)==1?mt_rand(1,7) :null)
                 ->setGears(mt_rand(5,10))
-                ->setGearbox($gearbox[mt_rand(0,count($gearbox)-1)])
-                ->setFuelType($fuelType[mt_rand(0,count($fuelType)-1)])
+                ->setGearbox($this->randomGearbox($car))
                 ->setManufactureDate($this->randomDate('1970/01/01','2023/01/01'))
                 ->setInterior($this->faker->text)
                 ->setMileage(mt_rand(0,300000))
@@ -267,6 +268,43 @@ class AppFixtures extends Fixture
         }
         //endregion
         $manager->flush();
+    }
+    public function randomConsumption(Car $car) : string
+    {
+        if($car->getFuelType() == 'Diesel' || $car->getFuelType() == 'Essence')
+        {
+            return mt_rand(5,20).' L/100KM';
+        }
+        if($car->getFuelType() == 'Electrique')
+        {
+            return mt_rand(4,25).' KW/100KM';
+        }
+        return mt_rand(2,10).' L/100KM'.' + '.mt_rand(4,20).' KW/100KM';
+    }
+    public function randomCylinderCapacity(Car $car) : ?int
+    {
+        if($car->getFuelType() == 'Electrique')
+        {
+            return null;
+        }
+        return mt_rand(500,2500);
+    }
+    public function randomCylinderNumber(Car $car) : ?int
+    {
+        if($car->getFuelType() == 'Electrique')
+        {
+            return null;
+        }
+        return mt_rand(4,20);
+    }
+    public function randomGearbox(Car $car) : string
+    {
+        $gearbox = ['Manuelle','Automatique','Séquentielle'];
+        if($car->getFuelType() == 'Essence'|| $car->getFuelType() == 'Diesel')
+        {
+            return $gearbox[mt_rand(0,count($gearbox)-1)];
+        }
+        return $gearbox[1];
     }
     // Find a randomDate between $start_date and $end_date
     function randomDate($start_date, $end_date)

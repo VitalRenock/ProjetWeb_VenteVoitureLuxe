@@ -2,9 +2,17 @@
 
 namespace App\Enum;
 
-enum PaymentType
+enum PaymentType : string
 {
-    case CASH;
-    case VISA;
-    case MASTERCARD;
+    case CASH = 'CASH';
+    case VISA = 'VISA';
+    case MASTERCARD = 'MASTERCARD';
+    public function toAString(): string
+    {
+        return $this->value;
+    }
+    public function toEnum(string $string) : PaymentType
+    {
+
+    }
 }
