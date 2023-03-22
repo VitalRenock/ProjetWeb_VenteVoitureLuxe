@@ -2,11 +2,14 @@
 
 namespace App\Entity;
 
+use App\Enum\OrderStatus;
+use App\Enum\PaymentType;
 use App\Repository\OrderRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints\Type;
 
 #[ORM\Entity(repositoryClass: OrderRepository::class)]
 #[ORM\Table(name: '`order`')]
@@ -20,8 +23,8 @@ class Order
     #[ORM\Column]
     private ?float $price = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $paymentType = null;
+    #[ORM\Column(type: "string", enumType: PaymentType::class, nullable: false)]
+    private ?PaymentType $paymentType = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $deliveryDate = null;
@@ -32,8 +35,8 @@ class Order
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $orderDate = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $orderStatus = null;
+    #[ORM\Column(type: "string", enumType: OrderStatus::class, nullable: false)]
+    private ?OrderStatus $orderStatus = null;
 
     #[ORM\ManyToOne(inversedBy: 'user')]
     #[ORM\JoinColumn(nullable: false)]
@@ -66,12 +69,12 @@ class Order
 
     public function getPaymentType(): ?string
     {
-        return $this->paymentType;
+        return $this->paymentType->value;
     }
 
     public function setPaymentType(string $paymentType): self
     {
-        $this->paymentType = $paymentType;
+        $this->paymentType = PaymentType::from($paymentType);
 
         return $this;
     }
@@ -114,12 +117,12 @@ class Order
 
     public function getOrderStatus(): ?string
     {
-        return $this->orderStatus;
+        return $this->orderStatus->value;
     }
 
     public function setOrderStatus(string $orderStatus): self
     {
-        $this->orderStatus = $orderStatus;
+        $this->orderStatus = OrderStatus::from($orderStatus);
 
         return $this;
     }
