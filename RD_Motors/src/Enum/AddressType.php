@@ -16,4 +16,17 @@ enum AddressType : string
             AddressType::BILLING => 'Adresse de facturation'
         };
     }
+    public static function toEnum(string $str) : ?AddressType
+    {
+        switch ($str)
+        {
+            CASE 'HOME':
+                return AddressType::HOME;
+            CASE 'DELIVERY':
+                return AddressType::DELIVERY;
+            CASE 'BILLING':
+                return AddressType::BILLING;
+        }
+        return null;
+    }
 }

@@ -12,4 +12,16 @@ enum CarState : string
             CarState::SECOND_HAND =>'Occasion'
         };
     }
+    public static function toEnum(string $str) : ?CarState
+    {
+        switch ($str)
+        {
+            CASE 'SECOND_HAND':
+                return CarState::SECOND_HAND;
+            CASE 'NEW':
+                return CarState::NEW;
+
+        }
+        return null;
+    }
 }

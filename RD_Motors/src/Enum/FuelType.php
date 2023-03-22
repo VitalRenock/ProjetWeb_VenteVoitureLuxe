@@ -18,4 +18,22 @@ enum FuelType : string
             FuelType::PLUG_IN_HYBRID =>'Plug In Hybrid'
         };
     }
+    public static function toEnum(string $str) : ?FuelType
+    {
+        switch ($str)
+        {
+            CASE 'PETROL':
+                return FuelType::PETROL;
+            CASE 'DIESEL':
+                return FuelType::DIESEL;
+            CASE 'ELECTRIC':
+                return FuelType::ELECTRIC;
+            CASE 'HYBRID':
+                return FuelType::HYBRID;
+            CASE 'PLUG_IN_HYBRID':
+                return FuelType::PLUG_IN_HYBRID;
+
+        }
+        return null;
+    }
 }

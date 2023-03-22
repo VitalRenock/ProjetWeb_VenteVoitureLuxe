@@ -14,4 +14,18 @@ enum GearboxType : string
             GearboxType::CVT=>'Séquentielle'
         };
     }
+    public static function toEnum(string $str) : ?GearboxType
+    {
+        switch ($str)
+        {
+            CASE 'MANUAL':
+                return GearboxType::MANUAL;
+            CASE 'AUTOMATIC':
+                return GearboxType::AUTOMATIC;
+            CASE 'CVT':
+                return GearboxType::CVT;
+
+        }
+        return null;
+    }
 }

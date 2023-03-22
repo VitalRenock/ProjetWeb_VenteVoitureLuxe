@@ -14,4 +14,18 @@ enum TransmissionType : string
             TransmissionType::FOURBYFOUR=>'4x4'
         };
     }
+    public static function toEnum(string $str) : ?TransmissionType
+    {
+        switch ($str)
+        {
+            CASE 'FRONT':
+                return TransmissionType::FRONT;
+            CASE 'REAR':
+                return TransmissionType::REAR;
+            CASE 'FOURBYFOUR':
+                return TransmissionType::FOURBYFOUR;
+
+        }
+        return null;
+    }
 }

@@ -226,7 +226,7 @@ class AppFixtures extends Fixture
         //region Création des Order
         $prixTotal = 0;
         $carsInOrder=[];
-        $payType=['CASH','VISA','MASTERCARD','TRANSFER'];
+        $paymentType=['CASH','VISA','MASTERCARD','TRANSFER'];
         for($i=0;$i<50;$i++)
         {
             foreach ($carsInOrder as $c)
@@ -241,6 +241,7 @@ class AppFixtures extends Fixture
                 ->setBillingDate(mt_rand(0,1)==1?$this->randomDate($order->getOrderDate()->format('Y-m-d H:i:s'),'2023/01/01'):null)
                 ->setDeliveryDate($this->randomDeliveryDate($order))
                 ->setUser($users[mt_rand(0,count($users)-1)])
+                ->setPaymentType($paymentType[mt_rand(0,count($paymentType)-1)])
                 ->setOrderStatus($this->randomOrderStatus($order));
             $carNumber = 0;
             do

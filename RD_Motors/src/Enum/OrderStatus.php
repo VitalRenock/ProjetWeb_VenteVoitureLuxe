@@ -20,4 +20,22 @@ enum OrderStatus : string
             OrderStatus::CANCELLED => 'Annulé'
         };
     }
+    public static function toEnum(string $str) : ?OrderStatus
+    {
+        switch ($str)
+        {
+            CASE 'CREATED':
+                return OrderStatus::CREATED;
+            CASE 'PAID':
+                return OrderStatus::PAID;
+            CASE 'INVOICED':
+                return OrderStatus::INVOICED;
+            CASE 'DELIVERED':
+                return OrderStatus::DELIVERED;
+            CASE 'CANCELLED':
+                return OrderStatus::CANCELLED;
+
+        }
+        return null;
+    }
 }

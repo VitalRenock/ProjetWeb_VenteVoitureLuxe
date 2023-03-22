@@ -15,12 +15,13 @@ class HomeController extends AbstractController
     #[Route('/', name:'home.index')]
     public function index(EntityManagerInterface $manager): Response
     {
-        $order = $manager->getRepository(Order::class)->find(1);
+        $order = new Order();
+        $order = $manager->getRepository(Order::class)->find(101);
 
 
         return $this->render('home/index.html.twig', [
             'title' => 'marche stp 1',
-            'testEnum' => strtolower(PaymentType::CASH->translateFR())
+            'testEnum' => PaymentType::toEnum($order->getPaymentType())->translateFR()
         ]);
     }
 }

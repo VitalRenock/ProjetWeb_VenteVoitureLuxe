@@ -30,7 +30,7 @@ class Car
     #[ORM\Column]
     private ?int $mileage = null;
 
-    #[ORM\Column(type: "string", enumType: PaymentType::class)]
+    #[ORM\Column(type: "string", enumType: CarState::class)]
     private ?CarState $state = null;
 
     #[ORM\Column]

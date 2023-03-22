@@ -16,4 +16,18 @@ enum ColorType : string
             ColorType::MAT => 'Mate'
         };
     }
+    public static function toEnum(string $str) : ?ColorType
+    {
+        switch ($str)
+        {
+            CASE 'NORMAL':
+                return ColorType::NORMAL;
+            CASE 'METALLIC':
+                return ColorType::METALLIC;
+            CASE 'MAT':
+                return ColorType::MAT;
+
+        }
+        return null;
+    }
 }

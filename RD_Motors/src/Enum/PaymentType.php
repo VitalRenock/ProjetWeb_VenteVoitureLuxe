@@ -18,4 +18,19 @@ enum PaymentType : string
             PaymentType::TRANSFER => 'Virement bancaire'
         };
     }
+    public static function toEnum(string $str) : ?PaymentType
+    {
+        switch ($str)
+        {
+            CASE 'CASH':
+                return PaymentType::CASH;
+            CASE 'VISA':
+                return PaymentType::VISA;
+            CASE 'MASTERCARD':
+                return PaymentType::MASTERCARD;
+            CASE 'TRANSFER':
+                return PaymentType::TRANSFER;
+        }
+        return null;
+    }
 }
