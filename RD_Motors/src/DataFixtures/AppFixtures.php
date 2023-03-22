@@ -121,9 +121,9 @@ class AppFixtures extends Fixture
 
         //region Création de Car
         $cars=[];
-        $fuelType = ['Essence','Diesel','Electrique','Plug-In-Hybrid','Hybrid Rechargeable'];
-        $state = ['Neuf','Occasion'];
-        $transmissiontype = ['Avant','Arrière','4x4'];
+        $fuelType = ['PETROL','DIESEL','ELECTRIC','PLUG_IN_HYBRID','HYBRID'];
+        $state = ['NEW','SECOND_HAND'];
+        $transmissiontype = ['FRONT','REAR','FOURBYFOUR'];
         for($i=0;$i<50;$i++)
         {
             $car = new Car();
